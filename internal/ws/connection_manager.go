@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/jibitesh/request-response-manager/internal/logger"
 	"github.com/jibitesh/request-response-manager/internal/store"
 )
 
@@ -43,7 +44,7 @@ func NewConnectionManager(sessionService *store.SessionService) *ConnectionManag
 func (cm *ConnectionManager) HandleWSClient(w http.ResponseWriter, r *http.Request) {
 	conn, err := cm.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("upgrade: %v", err)
+		logger.Error("upgrade: %v", err)
 		http.Error(w, "Upgrade failed!", http.StatusBadRequest)
 		return
 	}
@@ -54,7 +55,7 @@ func (cm *ConnectionManager) HandleWSClient(w http.ResponseWriter, r *http.Reque
 	cm.connMu.Unlock()
 
 	if _, err := cm.sessionService.AddSession(r.Context(), sessionId); err != nil {
-		log.Printf("set session: %v", err)
+		logger.Error("set session: %v", err)
 		conn.Close()
 		cm.removeConnection(sessionId)
 		return
@@ -63,20 +64,20 @@ func (cm *ConnectionManager) HandleWSClient(w http.ResponseWriter, r *http.Reque
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
 			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
 			} else {
-				log.Printf("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
 			}
 			if err := cm.sessionService.RemoveSession(r.Context(), sessionId); err != nil {
-				log.Printf("Failed to remove session: %s with error: %v", sessionId, err)
+				logger.Error("Failed to remove session: %s with error: %v", sessionId, err)
 				cm.removeConnection(sessionId)
 			}
 			break
 		}
 		if messageType == websocket.TextMessage {
-			log.Printf("Received message from sessionId: %s. Message: %v", sessionId, message)
+			logger.Info("Received message from sessionId: %s. Message: %v", sessionId, message)
 		}
 	}
 }
@@ -89,33 +90,33 @@ func (cm *ConnectionManager) HandleWSSend(w http.ResponseWriter, r *http.Request
 	}
 	sessionId := parts[3]
 	if sessionId == "" {
-		log.Printf("Received empty session id.")
+		logger.Info("Received empty session id.")
 		http.Error(w, "Missing session id", http.StatusBadRequest)
 		return
 	}
 
 	conn, err := cm.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("Failed to upgrade sessionId: %s to websocket. Error: %v", sessionId, err)
+		logger.Error("Failed to upgrade sessionId: %s to websocket. Error: %v", sessionId, err)
 		http.Error(w, "Failed to upgrade session to websocket.", http.StatusBadRequest)
 		return
 	}
 	defer conn.Close()
-	log.Printf("Upgraded sessionId: %s to websocket.", sessionId)
+	logger.Info("Upgraded sessionId: %s to websocket.", sessionId)
 
 	for {
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
 			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
 			} else {
-				log.Printf("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
+				logger.Error("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
 			}
 			break
 		}
-		log.Printf("Received message from sessionId: %s. Message: %s", sessionId, string(message))
+		logger.Info("Received message from sessionId: %s. Message: %s", sessionId, string(message))
 
 		if messageType == websocket.TextMessage {
 			cm.connMu.RLock()

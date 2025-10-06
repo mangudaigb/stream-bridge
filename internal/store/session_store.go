@@ -2,9 +2,9 @@ package store
 
 import (
 	"context"
-	"log"
 	"time"
 
+	"github.com/jibitesh/request-response-manager/internal/logger"
 	"github.com/jibitesh/request-response-manager/pkg/instance"
 )
 
@@ -35,7 +35,7 @@ func (ss *SessionService) AddSession(ctx context.Context, sessionId string) (boo
 		CreatedAt: time.Now(),
 	}
 	if err := ss.sessionStore.Set(ctx, sessionId, si); err != nil {
-		log.Printf("Error saving session: %v", err)
+		logger.Error("Error saving session: %v", err)
 		return false, err
 	}
 	return true, nil

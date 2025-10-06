@@ -2,10 +2,10 @@ package instance
 
 import (
 	"errors"
-	"log"
 	"net"
 
 	"github.com/jibitesh/request-response-manager/internal/config"
+	"github.com/jibitesh/request-response-manager/internal/logger"
 )
 
 type Instance struct {
@@ -21,7 +21,7 @@ func getIp() (string, error) {
 	}
 	for _, i := range interfaces {
 		if ipnet, ok := i.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			log.Printf("ipnet: %v", ipnet)
+			logger.Info("ipnet: %v", ipnet)
 			if ipnet.IP.To4() != nil {
 				ip := ipnet.IP.To4()
 				if ip.IsPrivate() {
@@ -36,11 +36,11 @@ func getIp() (string, error) {
 func GetInstance() (*Instance, error) {
 	ip, err := getIp()
 	if err != nil {
-		log.Printf("Error: %v", err)
+		logger.Error("Error: %v", err)
 		return nil, err
 	}
 	port := config.AppConfig.Server.Port
-	log.Printf("Local Private Ip Address: %s Port: %d \n", ip, port)
+	logger.Info("Local Private Ip Address: %s Port: %d \n", ip, port)
 	return &Instance{
 		Name: "none",
 		Ip:   ip,

@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/jibitesh/request-response-manager/internal/config"
+	"github.com/jibitesh/request-response-manager/internal/logger"
 	"github.com/jibitesh/request-response-manager/pkg/instance"
 	"github.com/redis/go-redis/v9"
 )
@@ -47,10 +47,10 @@ func (r RedisSessionStore) redisKey(sessionId string) string {
 }
 
 func (r RedisSessionStore) Set(ctx context.Context, sessionId string, si *SessionInfo) error {
-	log.Printf("Setting session info %v for %s", si, sessionId)
+	logger.Info("Setting session info %v for %s", si, sessionId)
 	b, err := json.Marshal(si)
 	if err != nil {
-		log.Printf("Error marshalling session info: %v", err)
+		logger.Error("Error marshalling session info: %v", err)
 		return err
 	}
 	duration := r.ttl * time.Minute
