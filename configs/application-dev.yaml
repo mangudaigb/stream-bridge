@@ -6,3 +6,11 @@ redis:
   timeout: 30
   pool_size: 10
 
+logger:
+  env: prod
+  level: INFO
+  encoding: console
+  outputPaths:
+    - stdout
+  errorOutputPaths:
+    - stderr

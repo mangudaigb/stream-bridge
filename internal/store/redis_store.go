@@ -8,7 +8,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jibitesh/request-response-manager/configs"
+	"github.com/jibitesh/request-response-manager/internal/config"
 	"github.com/jibitesh/request-response-manager/pkg/instance"
 	"github.com/redis/go-redis/v9"
 )
@@ -28,7 +28,7 @@ type RedisSessionStore struct {
 
 var ErrNotFound = errors.New("session not found")
 
-func NewRedisStore(cfg *configs.Config, instance *instance.Instance) (*RedisSessionStore, error) {
+func NewRedisStore(cfg *config.Config, instance *instance.Instance) (*RedisSessionStore, error) {
 	rdb := redis.NewClient(&redis.Options{
 		Addr: fmt.Sprintf("%s:%d", cfg.Redis.Host, cfg.Redis.Port),
 	})

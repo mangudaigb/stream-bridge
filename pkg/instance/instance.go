@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/jibitesh/request-response-manager/configs"
+	"github.com/jibitesh/request-response-manager/internal/config"
 )
 
 type Instance struct {
@@ -39,7 +39,7 @@ func GetInstance() (*Instance, error) {
 		log.Printf("Error: %v", err)
 		return nil, err
 	}
-	port := configs.AppConfig.Server.Port
+	port := config.AppConfig.Server.Port
 	log.Printf("Local Private Ip Address: %s Port: %d \n", ip, port)
 	return &Instance{
 		Name: "none",

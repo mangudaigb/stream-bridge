@@ -1,4 +1,4 @@
-package configs
+package config
 
 import (
 	"log"
@@ -16,6 +16,13 @@ type Config struct {
 		Port    int           `mapstructure:"port"`
 		Timeout time.Duration `mapstructure:"timeout"`
 	} `mapstructure:"redis"`
+	Logger struct {
+		Env              string   `mapstructure:"env"`
+		Level            string   `mapstructure:"level"`
+		Encoding         string   `mapstructure:"encoding"`
+		OutputPaths      []string `mapstructure:"outputPaths"`
+		ErrorOutputPaths []string `mapstructure:"errorOutputPaths"`
+	} `mapstructure:"logger"`
 }
 
 var AppConfig *Config
