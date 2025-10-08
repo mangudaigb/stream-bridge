@@ -62,7 +62,7 @@ func Init() error {
 	encCfg.EncodeCaller = zapcore.ShortCallerEncoder
 	cfg.EncoderConfig = encCfg
 
-	zapLogger, err := cfg.Build()
+	zapLogger, err := cfg.Build(zap.AddCaller(), zap.AddCallerSkip(1), zap.AddStacktrace(zapcore.ErrorLevel))
 	if err != nil {
 		return fmt.Errorf("cannot build zap logger: %w", err)
 	}
@@ -79,23 +79,39 @@ func Init() error {
 
 func Error(msg string, fields ...interface{}) {
 	if useSugar {
-		sugar.Fatalw(msg, fields...)
+		sugar.Fatal(msg, fields)
 	} else {
 		logger.Fatal(msg, toZapFields(fields...)...)
 	}
 }
 
+func Errorf(msg string, args ...interface{}) {
+	if useSugar {
+		sugar.Errorf(msg, args...)
+	} else {
+		logger.Error(fmt.Sprintf(msg, args...))
+	}
+}
+
 func Info(msg string, fields ...interface{}) {
 	if useSugar {
-		sugar.Infow(msg, fields...)
+		sugar.Info(msg, fields)
 	} else {
 		logger.Info(msg, toZapFields(fields...)...)
 	}
 }
 
+func Infof(msg string, args ...interface{}) {
+	if useSugar {
+		sugar.Infof(msg, args...)
+	} else {
+		logger.Info(fmt.Sprintf(msg, args...))
+	}
+}
+
 func Debug(msg string, fields ...interface{}) {
 	if useSugar {
-		sugar.Debugw(msg, fields...)
+		sugar.Debugf(msg, fields...)
 	} else {
 		logger.Debug(msg, toZapFields(fields...)...)
 	}

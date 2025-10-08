@@ -108,11 +108,11 @@ func (cm *ConnectionManager) HandleWSSend(w http.ResponseWriter, r *http.Request
 		messageType, message, err := conn.ReadMessage()
 		if err != nil {
 			if websocket.IsCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				logger.Error("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Errorf("Connection closed normally for sessionId: %s. Error: %v", sessionId, err)
 			} else if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				logger.Error("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
+				logger.Errorf("Connection closed abnormally for sessionId: %s. Error: %v", sessionId, err)
 			} else {
-				logger.Error("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
+				logger.Errorf("Failed to read message from sessionId: %s. Error: %v", sessionId, err)
 			}
 			break
 		}
@@ -141,6 +141,7 @@ func (cm *ConnectionManager) HandleWSSend(w http.ResponseWriter, r *http.Request
 			continue
 		}
 	}
+	return
 }
 
 // Handles POST /send {session_id, message}

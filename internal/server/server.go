@@ -53,7 +53,7 @@ func NewServer(cfg *config.Config, instance *instance.Instance) (*Server, error)
 }
 
 func (s *Server) Start() error {
-	logger.Info("starting server on port %d", s.cfg.Server.Port)
+	logger.Infof("starting server on port %d", s.cfg.Server.Port)
 	return s.httpSrv.ListenAndServe()
 }
 
@@ -62,7 +62,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 		return err
 	}
 	if err := s.wsManager.CloseAllConnections(); err != nil {
-		logger.Info("warning: ws manager close error: %v", err)
+		logger.Infof("warning: ws manager close error: %v", err)
 	}
 	return nil
 }

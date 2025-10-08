@@ -21,7 +21,7 @@ func getIp() (string, error) {
 	}
 	for _, i := range interfaces {
 		if ipnet, ok := i.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			logger.Info("ipnet: %v", ipnet)
+			logger.Infof("ipnet: %v", ipnet)
 			if ipnet.IP.To4() != nil {
 				ip := ipnet.IP.To4()
 				if ip.IsPrivate() {
@@ -40,7 +40,7 @@ func GetInstance() (*Instance, error) {
 		return nil, err
 	}
 	port := config.AppConfig.Server.Port
-	logger.Info("Local Private Ip Address: %s Port: %d \n", ip, port)
+	logger.Infof("Local Private Ip Address: %s Port: %d", ip, port)
 	return &Instance{
 		Name: "none",
 		Ip:   ip,

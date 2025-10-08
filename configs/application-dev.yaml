@@ -7,7 +7,7 @@ redis:
   pool_size: 10
 
 logger:
-  env: prod
+  env: dev
   level: INFO
   encoding: console
   outputPaths:
